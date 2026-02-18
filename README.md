@@ -44,7 +44,6 @@ The system outputs a 3D binary mask (`.tif` format) representing the segmented p
 Below are examples of the model's performance on validation slices:
 
 **Input Raw CT vs. Ground Truth vs. Prediction**
-*(Note: Images from your results directory)*
 
 ![Result 1](img/__results___9_241.png)
 *Figure 1: Comparison of Raw CT, Ground Truth, and VNet-Mamba Prediction (Dice: 0.516)*
