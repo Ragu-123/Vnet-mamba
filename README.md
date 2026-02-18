@@ -1,59 +1,62 @@
-## Title of the Project
-Small description about the project like one below
-The integration of a chatbot within a hostel booking system, aimed at streamlining the reservation process for students and improving the overall user experience.
+# Vesuvius Challenge - Surface Detection: VNet-Mamba
 
 ## About
-<!--Detailed Description about the project-->
-Tailored Chatbot for Hostel Booking System is a project designed to integrate a chatbot that leverages advanced natural language processing techniques to understand and respond to user queries to the hostel booking system. Traditional hostel booking processes are often time-consuming and involve manual searches and extensive communication with hostel staff. This project seeks to overcome these challenges by creating an easy-to-use chatbot interface that assists students in addressing inquiries.
+This project implements a **Mamba-Enhanced VNet-FPN** architecture designed for the Vesuvius Challenge - Surface Detection. The goal is to virtually unwrap ancient carbonized scrolls from the Villa dei Papiri by accurately segmenting the papyrus sheets within 3D X-ray CT scans.
+
+Traditional 3D segmentation models often struggle with the complex, anisotropic nature of scroll data, leading to topological errors like "wormholes" (spurious connections between layers) or "tears" (holes in the sheet). This project integrates **Bidirectional Mamba State Space Models (SSM)** into a VNet architecture to explicitly model the sequential nature of the Z-axis (depth), allowing the network to track sheet-gap-sheet transitions more effectively than standard convolution or attention mechanisms.
 
 ## Features
-<!--List the features of the project as shown below-->
-- Implements advance neural network method.
-- A framework based application for deployment purpose.
-- High scalability.
-- Less time complexity.
-- A specific scope of Chatbot response model, using json data format.
+- **Mamba Z-Axis State Tracking:** Utilizes Bidirectional Mamba SSM blocks at deep encoder stages and the bottleneck to track sheet/gap states through depth with linear $O(D)$ complexity.
+- **Factored Anisotropic Convolutions:** Replaces standard 3D convolutions with factored $(1,3,3)$ and $(3,1,1)$ kernels to separate XY-plane texture analysis from Z-axis layer transitions.
+- **Topology Refinement Head:** A specialized output head using multi-scale dilated convolutions to perform learnable morphological cleanup, significantly reducing topological noise.
+- **Boundary Detection:** Auxiliary head trained to detect surface boundaries, sharpening the final volumetric mask.
+- **Memory Efficient:** Optimized architecture removing expensive $O(D^2)$ attention mechanisms, allowing for larger batch sizes on standard GPUs.
 
 ## Requirements
-<!--List the requirements of the project as shown below-->
-* Operating System: Requires a 64-bit OS (Windows 10 or Ubuntu) for compatibility with deep learning frameworks.
-* Development Environment: Python 3.6 or later is necessary for coding the sign language detection system.
-* Deep Learning Frameworks: TensorFlow for model training, MediaPipe for hand gesture recognition.
-* Image Processing Libraries: OpenCV is essential for efficient image processing and real-time hand gesture recognition.
-* Version Control: Implementation of Git for collaborative development and effective code management.
-* IDE: Use of VSCode as the Integrated Development Environment for coding, debugging, and version control integration.
-* Additional Dependencies: Includes scikit-learn, TensorFlow (versions 2.4.1), TensorFlow GPU, OpenCV, and Mediapipe for deep learning tasks.
+To run this project, you will need the following dependencies:
+
+* **Operating System:** Linux (Ubuntu 20.04+ recommended) or Windows w/ WSL2
+* **Python:** 3.10 or later
+* **Deep Learning Framework:** PyTorch (with CUDA support)
+* **Key Libraries:**
+    * `mamba_ssm` (State Space Model implementation)
+    * `causal_conv1d`
+    * `numpy`, `pandas`, `scipy`
+    * `tifffile` (for handling .tif volumes)
+    * `imagecodecs`
 
 ## System Architecture
-<!--Embed the system architecture diagram as shown below-->
+The model follows a VNet-FPN (Feature Pyramid Network) design enhanced with Mamba blocks:
 
-![Screenshot 2023-11-25 133637](https://github.com/<<yourusername>>/Hand-Gesture-Recognition-System/assets/75235455/a60c11f3-0a11-47fb-ac89-755d5f45c995)
+1.  **Physics Adapter:** Pre-processes input volumes using explicit gradient and Laplacian computations.
+2.  **Encoder:** A 3-stage downsampling path. Stages 2 and 3 incorporate **Mamba Z-Blocks** to capture long-range depth dependencies.
+3.  **Bottleneck:** Combines ASPP (Atrous Spatial Pyramid Pooling) with Mamba for global context.
+4.  **Decoder:** An FPN-style upsampling path with skip connections to merge semantic and spatial features.
+5.  **Heads:** Multiple output heads for Mask, Skeleton, Centerline, Vectors, and Boundary detection.
+
+<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/b0410701-0831-4b1e-80cf-db8f3c6cd95e" />
 
 
 ## Output
+The system outputs a 3D binary mask (`.tif` format) representing the segmented papyrus sheet.
 
-<!--Embed the Output picture at respective places as shown below as shown below-->
-#### Output1 - Name of the output
+#### Visualization
+Below are examples of the model's performance on validation slices:
 
-![Screenshot 2023-11-25 134037](https://github.com/<<yourusername>>/Hand-Gesture-Recognition-System/assets/75235455/8c2b6b5c-5ed2-4ec4-b18e-5b6625402c16)
+**Input Raw CT vs. Ground Truth vs. Prediction**
+*(Note: Images from your results directory)*
 
-#### Output2 - Name of the output
-![Screenshot 2023-11-25 134253](https://github.com/<<yourusername>>/Hand-Gesture-Recognition-System/assets/75235455/5e05c981-05ca-4aaa-aea2-d918dcf25cb7)
+![Result 1](img/__results___9_241.png)
+*Figure 1: Comparison of Raw CT, Ground Truth, and VNet-Mamba Prediction (Dice: 0.516)*
 
-Detection Accuracy: 96.7%
-Note: These metrics can be customized based on your actual performance evaluations.
-
+![Result 2](img/__results___9_247.png)
+*Figure 2: Handling complex folded regions (Dice: 0.604)*
 
 ## Results and Impact
-<!--Give the results and impact as shown below-->
-The Sign Language Detection System enhances accessibility for individuals with hearing and speech impairments, providing a valuable tool for inclusive communication. The project's integration of computer vision and deep learning showcases its potential for intuitive and interactive human-computer interaction.
+This model contributes to the global effort to read the Herculaneum scrolls. By improving surface detection accuracy—specifically by reducing topological errors—this tool aids in the "virtual unwrapping" pipeline. Better segmentation allows for cleaner flattening of the scrolls, which is the prerequisite for detecting ink and reading the ancient text hidden inside.
 
-This project serves as a foundation for future developments in assistive technologies and contributes to creating a more inclusive and accessible digital environment.
-
-## Articles published / References
-1. N. S. Gupta, S. K. Rout, S. Barik, R. R. Kalangi, and B. Swampa, “Enhancing Heart Disease Prediction Accuracy Through Hybrid Machine Learning Methods ”, EAI Endorsed Trans IoT, vol. 10, Mar. 2024.
-2. A. A. BIN ZAINUDDIN, “Enhancing IoT Security: A Synergy of Machine Learning, Artificial Intelligence, and Blockchain”, Data Science Insights, vol. 2, no. 1, Feb. 2024.
-
-
-
-
+## References
+1.  **Vesuvius Challenge:** [https://scrollprize.org](https://scrollprize.org)
+2.  **Mamba:** Gu, A., & Dao, T. (2023). Mamba: Linear-Time Sequence Modeling with Selective State Spaces.
+3.  **V-Net:** Milletari, F., et al. (2016). V-Net: Fully Convolutional Neural Networks for Volumetric Medical Image Segmentation.
+4.  **clDice:** Shit, S., et al. (2021). clDice - a Novel Topology-Preserving Loss Function for Tubular Structure Segmentation.
